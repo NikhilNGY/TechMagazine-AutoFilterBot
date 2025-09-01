@@ -1,12 +1,16 @@
-FROM python:3.10.8-slim-buster
+FROM python:3.10
 
-RUN apt update && apt upgrade -y
-RUN apt install git -y
-COPY requirements.txt /requirements.txt
+# Set working directory
+WORKDIR /EvaMaria 
 
-RUN cd /
-RUN pip3 install -U pip && pip3 install -U -r requirements.txt
-RUN mkdir /EvaMaria
-WORKDIR /EvaMaria
-COPY start.sh /start.sh
-CMD ["/bin/bash", "/start.sh"]
+# Copy dependency file first (for caching)
+COPY requirements.txt ./
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the project files
+COPY . .
+
+# Start the bot
+CMD ["python3", "bot.py"]
